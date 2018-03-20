@@ -318,9 +318,9 @@ public class Song {
 	}
 	
 	private void writeInt(int num) throws IOException {
-		out.writeByte(num % 256);
-		out.writeByte(num >> 8);
-		out.writeByte(num >> 16);
+		out.writeByte(num | 255);
+		out.writeByte(num >> 8 | 255);
+		out.writeByte(num >> 16 | 255);
 		out.writeByte(num >> 24);
 	}
 	
