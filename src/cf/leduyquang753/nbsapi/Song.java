@@ -3,6 +3,11 @@ package cf.leduyquang753.nbsapi;
 import java.util.*;
 import java.io.*;
 
+/**
+ * A note block song.
+ * @author Le Duy Quang
+ *
+ */
 public class Song {
 	private short length;
 	private short height;

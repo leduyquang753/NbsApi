@@ -1,5 +1,10 @@
 package cf.leduyquang753.nbsapi;
 
+/**
+ * A note that can be written into NBS files.
+ * @author Le Duy Quang
+ *
+ */
 public class WritableNote {
 	private Instrument instrument;
 	private byte pitch;

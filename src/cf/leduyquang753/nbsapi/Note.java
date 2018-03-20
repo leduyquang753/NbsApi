@@ -1,5 +1,10 @@
 package cf.leduyquang753.nbsapi;
 
+/**
+ * A note in a song.
+ * @author Le Duy Quang
+ *
+ */
 public class Note {
 	private Instrument instrument;
 	private byte pitch;
