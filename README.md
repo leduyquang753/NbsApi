@@ -5,7 +5,7 @@ This is an in-development API for reading and writing Note Block Song files (.nb
 that can be used in David's [Note Block Studio](https://www.stuffbydavid.com/mcnbs).
 You can use it to read and write .nbs files without custom instruments (currently).
 
-The Javadoc can be found [here](https://nbsapi.github.io).
+The Javadoc can be found [here](https://leduyquang753.github.io/NbsApi/doc).
 
 **WARNING:** This API is used at your own risk as stated in the MIT License associated with this repository.
 I won't respond to any damages, problems that may occur with this API. But you can report bugs in the **Issues** section.
