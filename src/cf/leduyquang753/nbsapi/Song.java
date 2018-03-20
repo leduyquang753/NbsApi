@@ -29,7 +29,6 @@ public class Song {
 	
 	public Song(
 			short length,
-			short height,
 			String name,
 			String author,
 			String originalAuthor,
@@ -46,7 +45,6 @@ public class Song {
 			String MidiSchematicFile,
 			List<Layer> songBoard) throws IllegalArgumentException {
 		setLength(length);
-		setHeight(height);
 		setName(name);
 		setAuthor(author);
 		setOriginalAuthor(originalAuthor);
@@ -153,6 +151,7 @@ public class Song {
 			out.writeByte(i.getInstrument().getID());
 			out.writeByte(i.getPitch());
 		}
+		writeShort((short)0);
 		writeShort((short)0);
 		
 		for (Layer l : songBoard) {
@@ -314,14 +313,14 @@ public class Song {
 	
 	private void writeShort(short num) throws IOException {
 		out.writeByte(num%256);
-		out.writeByte(num >> 8);
+		out.writeByte(num/256);
 	}
 	
 	private void writeInt(int num) throws IOException {
-		out.writeByte(num | 255);
-		out.writeByte(num >> 8 | 255);
-		out.writeByte(num >> 16 | 255);
-		out.writeByte(num >> 24);
+		out.writeByte(num%256);
+		out.writeByte(num%65536/256);
+		out.writeByte(num%16777216/65536);
+		out.writeByte(num/16777216);
 	}
 	
 	private void writeString(String str) throws IOException {
