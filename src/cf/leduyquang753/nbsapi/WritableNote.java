@@ -7,7 +7,7 @@ public class WritableNote {
 	private int location;
 	
 	public WritableNote(Instrument instrument, byte pitch, int layer, int location) throws IllegalArgumentException {
-		if (pitch < 0 || pitch > 87) throw new IllegalArgumentException("Pitch must be from 0 to 87.");
+		if (pitch < 0 || pitch > 87) throw new IllegalArgumentException("Pitch must be frrom 0 to 87.");
 		setInstrument(instrument);
 		setPitch(pitch);
 		setLayer(layer);
