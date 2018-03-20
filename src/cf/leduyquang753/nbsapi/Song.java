@@ -14,6 +14,7 @@ public class Song {
 	private boolean autoSave;
 	private byte autoSaveDuration;
 	private byte timeSignature;
+	private int minutesSpent;
 	private int leftClicks;
 	private int rightClicks;
 	private int blocksAdded;
@@ -37,6 +38,7 @@ public class Song {
 			boolean autoSave,
 			byte autoSaveDuration,
 			byte timeSignature,
+			int minutesSpent,
 			int leftClicks,
 			int rightClicks,
 			int blocksAdded,
@@ -74,6 +76,7 @@ public class Song {
 		setAutoSave(in.readBoolean());
 		setAutoSaveDuration(in.readByte());
 		setTimeSignature(in.readByte());
+		setMinutesSpent(readInt());
 		setLeftClicks(readInt());
 		setRightClicks(readInt());
 		setBlocksAdded(readInt());
@@ -118,7 +121,48 @@ public class Song {
 		
 		outstream = new FileOutputStream(toFile);
 		out = new DataOutputStream(outstream);
+		writeShort(length);
+		writeShort(height);
+		writeString(name);
+		writeString(author);
+		writeString(originalAuthor);
+		writeString(description);
+		writeShort(tempo);
+		out.writeByte(autoSave ? 1 : 0);
+		out.writeByte(autoSaveDuration);
+		out.writeByte(timeSignature);
+		writeInt(minutesSpent);
+		writeInt(leftClicks);
+		writeInt(rightClicks);
+		writeInt(blocksAdded);
+		writeInt(blocksRemoved);
+		writeString(MidiSchematicFile);
 		
+		List<WritableNote> noteList = Utils.convertToWritable(songBoard);
+		int oldTick = -1;
+		int oldLayer = -1;
+		for (WritableNote i : noteList) {
+			if (i.getLocation() > oldTick) {
+				if (oldTick != -1) writeShort((short)0);
+				writeShort((short) (i.getLocation() - oldTick));
+				oldTick = i.getLocation();
+				oldLayer = -1;
+			}
+			writeShort((short)(i.getLayer() - oldLayer));
+			oldLayer = i.getLayer();
+			out.writeByte(i.getInstrument().getID());
+			out.writeByte(i.getPitch());
+		}
+		writeShort((short)0);
+		
+		for (Layer l : songBoard) {
+			writeString(l.getName());
+			out.writeByte(l.getVolume());
+		}
+		
+		out.writeByte(0);
+		out.close();
+		outstream.close();
 	}
 	
 	public short getLength() {
@@ -186,6 +230,13 @@ public class Song {
 	public void setTimeSignature(byte timeSignature) throws IllegalArgumentException {
 		if (timeSignature < 2 || timeSignature > 8) throw new IllegalArgumentException("Time signature must be from 2 to 8.");
 		this.timeSignature = timeSignature;
+	}
+	public int getMinutesSpent() {
+		return minutesSpent;
+	}
+	public void setMinutesSpent(int minutesSpent) throws IllegalArgumentException {
+		if (minutesSpent < 0) throw new IllegalArgumentException("RMinutes spent must not be negative.");
+		this.minutesSpent = minutesSpent;
 	}
 	public int getRightClicks() {
 		return rightClicks;
