@@ -122,8 +122,11 @@ public class Song {
 				short jumpLayers = readShort();
 				if (jumpLayers == 0) break;
 				layer += jumpLayers;
-				if (songBoard.size() < layer+1)
-					for (int i = 0; i < layer+1-songBoard.size(); i++) songBoard.add(new Layer("",(byte) 100));
+				if (songBoard.size() < layer+1) {
+					for (int i = 0; i <= (layer+4-songBoard.size()); i++) {
+						songBoard.add(new Layer("",(byte) 100));
+					}
+				}
 				songBoard.get(layer).setNote(tick, new Note(Instrument.fromID(in.readByte()), in.readByte()));
 			}
 		}
