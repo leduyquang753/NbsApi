@@ -6,6 +6,14 @@ public class WritableNote {
 	private int layer;
 	private int location;
 	
+	/**
+	 * The type of note which contains enough information to be written into .nbs files. You shouldn't use this.
+	 * @param instrument The note's instrument.
+	 * @param pitch The note's pitch.
+	 * @param layer The layer number of the note.
+	 * @param location The song tick where the note is on.
+	 * @throws IllegalArgumentException
+	 */
 	public WritableNote(Instrument instrument, byte pitch, int layer, int location) throws IllegalArgumentException {
 		if (pitch < 0 || pitch > 87) throw new IllegalArgumentException("Pitch must be frrom 0 to 87.");
 		setInstrument(instrument);

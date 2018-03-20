@@ -1,5 +1,10 @@
 package cf.leduyquang753.nbsapi;
 
+/**
+ * Note block's instrument.
+ * @author Le Duy Quang
+ *
+ */
 public enum Instrument {
 	HARP (0),
 	BASS (1),
@@ -17,10 +22,20 @@ public enum Instrument {
 		this.ID = ID;
 	}
 	
+	/**
+	 * Returns an ID of the instrument to be written in NBS files.
+	 * @return The ID.
+	 */
 	public int getID() {
 		return ID;
 	}
 	
+	/**
+	 * Determines the instrument from its NBS file ID.
+	 * @param ID The instrument ID (0-9).
+	 * @return The corresponding instrument.
+	 * @throws IllegalArgumentException
+	 */
 	public static Instrument fromID(int ID) throws IllegalArgumentException {
 		switch (ID) {
 		case 0: return HARP;

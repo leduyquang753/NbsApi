@@ -27,6 +27,26 @@ public class Song {
 	private FileOutputStream outstream;
 	private DataOutputStream out;
 	
+	/**
+	 * Builds a new song with the given information.
+	 * @param length
+	 * @param name
+	 * @param author
+	 * @param originalAuthor
+	 * @param description
+	 * @param tempo
+	 * @param autoSave
+	 * @param autoSaveDuration
+	 * @param timeSignature
+	 * @param minutesSpent
+	 * @param leftClicks
+	 * @param rightClicks
+	 * @param blocksAdded
+	 * @param blocksRemoved
+	 * @param MidiSchematicFile
+	 * @param songBoard
+	 * @throws IllegalArgumentException
+	 */
 	public Song(
 			short length,
 			String name,
@@ -61,6 +81,11 @@ public class Song {
 		changeSongBoardTo(songBoard);
 	}
 	
+	/**
+	 * Reads a song from a file.
+	 * @param fromFile The file that should be read.
+	 * @throws IOException
+	 */
 	public Song(File fromFile) throws IOException {
 		instream = new FileInputStream(fromFile);
 		in = new DataInputStream(instream);
@@ -105,6 +130,11 @@ public class Song {
 		instream.close();
 	}
 	
+	/**
+	 * Writes the song to the specific file.
+	 * @param toFile The file to write to.
+	 * @throws IOException
+	 */
 	public void writeSong(File toFile) throws IOException {
 		short maxLength = -1;
 		for (Layer l : songBoard) {
