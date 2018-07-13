@@ -15,7 +15,7 @@ public class Utils {
 	 * @param board The song board.
 	 * @return The note list.
 	 */
-	protected static List<WritableNote> convertToWritable(List<Layer> board) {
+	protected static List<NoteWithFullInfo> convertToWritable(List<Layer> board) {
 		List<Integer> ticks = new ArrayList<Integer>();
 		for (Layer l : board) {
 			for (int n : l.getNoteList().keySet()) {
@@ -24,8 +24,8 @@ public class Utils {
 		}
 		Collections.sort(ticks);
 		
-		List<WritableNote> result = new ArrayList<WritableNote>();
-		List<WritableNote> thisTick = new ArrayList<WritableNote>();
+		List<NoteWithFullInfo> result = new ArrayList<NoteWithFullInfo>();
+		List<NoteWithFullInfo> thisTick = new ArrayList<NoteWithFullInfo>();
 		for (int i : ticks) {
 			thisTick.clear();
 			int currentLayer = -1;
@@ -33,7 +33,7 @@ public class Utils {
 				currentLayer ++;
 				if (l.getNoteList().containsKey(i)) {
 					Note n = l.getNoteList().get(i);
-					thisTick.add(new WritableNote(n.getInstrument(), n.getPitch(), currentLayer, i));
+					thisTick.add(new NoteWithFullInfo(n.getInstrument(), n.getPitch(), currentLayer, i));
 				}
 			}
 			Collections.sort(thisTick, (note1, note2) -> new Integer(note1.getLayer()).compareTo(new Integer(note2.getLayer())));

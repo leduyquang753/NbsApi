@@ -24,6 +24,14 @@ public class Layer {
 	}
 	
 	/**
+	 * Creates an empty layer with defaults (name = ""; volume = 100)
+	 */
+	public Layer() {
+		setName("");
+		setVolume((byte) 100);
+	}
+	
+	/**
 	 * Returns the note list of the layer.
 	 * @return The list.
 	 */
@@ -33,13 +41,22 @@ public class Layer {
 	
 	/**
 	 * Sets the note at a tick on the layer.
-	 * @param pos The tick where the note is on.
+	 * @param pos The tick where the note is at.
 	 * @param note The note's properties.
 	 * @throws IllegalArgumentException
 	 */
 	public void setNote(int pos, Note note) throws IllegalArgumentException {
 		if (pos < 0) throw new IllegalArgumentException("Note position must not be negative.");
 		notes.put(pos, note);
+	}
+	
+	/**
+	 * A shortcut to get a note on this layer instead of retrieving it from {@link Layer#getNoteList()}.
+	 * @param pos The tick where the note is at.
+	 * @return The note if there is a note at that tick, or {@code null} else.
+	 */
+	public Note getNote(int pos) {
+		return getNoteList().get(pos);
 	}
 
 	public String getName() {

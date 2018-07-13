@@ -1,6 +1,12 @@
 package cf.leduyquang753.nbsapi;
 
 import java.util.*;
+
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Track;
+
 import java.io.*;
 
 /**
@@ -139,10 +145,10 @@ public class Song {
 	
 	/**
 	 * Writes the song to the specific file.
-	 * @param toFile The file to write to.
+	 * @param file The file to write to.
 	 * @throws IOException
 	 */
-	public void writeSong(File toFile) throws IOException {
+	public void writeSongToFile(File file) throws IOException {
 		short maxLength = -1;
 		for (Layer l : songBoard) {
 			short maxPos = -1;
@@ -154,7 +160,7 @@ public class Song {
 		setLength(maxLength);
 		setHeight((short) songBoard.size());
 		
-		outstream = new FileOutputStream(toFile);
+		outstream = new FileOutputStream(file);
 		out = new DataOutputStream(outstream);
 		writeShort(length);
 		writeShort(height);
@@ -173,10 +179,10 @@ public class Song {
 		writeInt(blocksRemoved);
 		writeString(MidiSchematicFile);
 		
-		List<WritableNote> noteList = Utils.convertToWritable(songBoard);
+		List<NoteWithFullInfo> noteList = Utils.convertToWritable(songBoard);
 		int oldTick = -1;
 		int oldLayer = -1;
-		for (WritableNote i : noteList) {
+		for (NoteWithFullInfo i : noteList) {
 			if (i.getLocation() > oldTick) {
 				if (oldTick != -1) writeShort((short)0);
 				writeShort((short) (i.getLocation() - oldTick));
@@ -199,6 +205,93 @@ public class Song {
 		out.writeByte(0);
 		out.close();
 		outstream.close();
+	}
+	
+	/**
+	 * Writes the song as MIDI file to be imported into other programs. The MIDI will have 11 channels:
+	 * <li>The first channel containing the timing information.</li>
+	 * <li>10 channels for 10 instruments.</li> 
+	 * @param file The file to be written to.
+	 * @throws Exception If any exception occurs, it will be thrown outside, so you have to <b>catch them explicitly</b>.
+	 */
+	public void writeSongToMidiFile(File file) throws Exception {
+		Sequence songOut = new Sequence(Sequence.PPQ, 24);
+		Track time = songOut.createTrack();
+		time.add(new MidiEvent(new TempoMessage(getTempo()/100f), 0));
+		Track[] tracks = new Track[10];
+		for (int i = 0; i < 10; i++) {
+			tracks[i] = songOut.createTrack();
+		}
+		for (Layer l : getSongBoard()) {
+			HashMap<Integer, Note> list = l.getNoteList();
+			for (int loc : list.keySet()) {
+				Note n = list.get(loc);
+				int instrument = n.getInstrument().getID();
+				tracks[instrument].add(new MidiEvent(new NoteStartMessage(instrument, n.getPitch()), loc*6));
+				tracks[instrument].add(new MidiEvent(new NoteEndMessage(instrument, n.getPitch()), loc*6+5));
+			}
+		}
+		MidiSystem.write(songOut, MidiSystem.getMidiFileTypes(songOut)[0], file);
+	}
+	
+	/**
+	 * Picks a note at an X; Y location.
+	 * @param tick The tick (X axis) the note is at.
+	 * @param layer The layer (Y axis) the note is on. <b>Zero based.</b>
+	 * @return The note specified if there is, or <code>null</code> if there isn't or there is an exception.
+	 */
+	public Note getNoteAt(int tick, int layer) {
+		try {
+			return getSongBoard().get(layer).getNoteList().get(tick);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sets a note at an X; Y location. If there is a note already there, it will be overwritten.
+	 * @param tick The tick (X axis) the note is at.
+	 * @param layer The layer (Y axis) the note is on. <b>Zero based.</b>
+	 * @param note The note to be put.
+	 * @return A {@link Note} that was there and was overwritten, or {@code null} if there wasn't a note there previously.
+	 */
+	public Note setNoteAt(int tick, int layer, Note note) {
+		List<Layer> songBoard = getSongBoard();
+		while(songBoard.size() < layer+1) {
+			songBoard.add(new Layer());
+		}
+		Layer l = songBoard.get(layer);
+		Note old = null;
+		if (l.getNoteList().containsKey(tick)) old = l.getNoteList().get(tick);
+		songBoard.get(layer).setNote(tick, note);
+		return old;
+	}
+	
+	/**
+	 * Injects a note with full information into the song. If there is already a note at its location, that note will be overwritten.
+	 * @param note The note to be injected.
+	 * @return A {@link Note} that was at its location and was overwritten, or {@code null} if there wasn't a note there previously.
+	 */
+	public Note injectNote(NoteWithFullInfo note) {
+		return setNoteAt(note.getLocation(), note.getLayer(), new Note(note.getInstrument(), note.getPitch()));
+	}
+	
+	/**
+	 * Retrieves all notes in the song.
+	 * @return An {@link ArrayList} of {@link NoteWithFullInfo}s, each containing its full information, including its location.
+	 */
+	public List<NoteWithFullInfo> getAllNotes() {
+		List<NoteWithFullInfo> notes = new ArrayList<NoteWithFullInfo>();
+		int index = -1;
+		for (Layer l : getSongBoard()) {
+			index++;
+			HashMap<Integer, Note> li = l.getNoteList();
+			for (int loc : li.keySet()) {
+				Note n = li.get(loc);
+				notes.add(new NoteWithFullInfo(n.getInstrument(), n.getPitch(), index, loc));
+			}
+		}
+		return notes;
 	}
 	
 	public short getLength() {
